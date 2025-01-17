@@ -11,7 +11,6 @@ import RxSwift
 class UserDetailViewController: UIViewController {
     var viewModel: UserDetailViewModel!
     private let disposeBag = DisposeBag()
-
     
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var emailLabel: UILabel!
@@ -21,6 +20,7 @@ class UserDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupBindings()
+        setupNavigationBar()
     }
     
     private func setupBindings() {
@@ -39,6 +39,12 @@ class UserDetailViewController: UIViewController {
         websiteLabel.text = viewData.website
     }
     
-
-
+    private func setupNavigationBar() {
+        // Back button'ın görünümünü özelleştir
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = backButton
+        
+        // Back button'ın rengini siyah yap
+        navigationController?.navigationBar.tintColor = .black
+    }
 }

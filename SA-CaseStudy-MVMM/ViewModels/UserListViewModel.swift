@@ -10,18 +10,26 @@ import RxSwift
 class UserListViewModel {
     var coordinator: AppCoordinator?
     private let disposeBag = DisposeBag()
-    private let userRepository = UserRepository()
+    private let repository: UserRepositoryProtocol
     
     let users = PublishSubject<[User]>()
     let errorMessage = PublishSubject<String>()
+    let isLoading = PublishSubject<Bool>()
+    
+    init(repository: UserRepositoryProtocol = UserRepository()) {
+        self.repository = repository
+    }
     
     func loadUsers() {
-        userRepository.fetchUsers()
+        isLoading.onNext(true)
+        repository.fetchUsers()
             .subscribe(
-                onNext: { [weak self] fetchedUsers in
-                    self?.users.onNext(fetchedUsers)
+                onNext: { [weak self] users in
+                    self?.isLoading.onNext(false)
+                    self?.users.onNext(users)
                 },
                 onError: { [weak self] error in
+                    self?.isLoading.onNext(false)
                     self?.errorMessage.onNext("Error: \(error.localizedDescription)")
                 }
             )

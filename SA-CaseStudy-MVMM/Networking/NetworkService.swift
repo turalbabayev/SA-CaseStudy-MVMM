@@ -8,41 +8,52 @@
 import Foundation
 import RxSwift
 
-class NetworkService{
+class NetworkService {
     static let shared = NetworkService()
+    private init() {}
     
-    private init(){}
-    
-    func request<T:Decodable>(urlString: String) -> Observable<T>{
+    func request<T: Decodable>(urlString: String) -> Observable<T> {
         return Observable.create { observer in
             guard let url = URL(string: urlString) else {
-                observer.onError(NSError(domain: "InvalidURL", code: -1))
+                observer.onError(NetworkError.invalidURL)
                 return Disposables.create()
             }
             
-            let task = URLSession.shared.dataTask(with: url) { data, _, error in
-                if let error = error{
-                    observer.onError(error)
+            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                if let error = error {
+                    observer.onError(NetworkError.noConnection)
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    observer.onError(NetworkError.serverError(0))
+                    return
+                }
+                
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    observer.onError(NetworkError.serverError(httpResponse.statusCode))
                     return
                 }
                 
                 guard let data = data else {
-                    observer.onError(NSError(domain: "NoData", code: -1))
+                    observer.onError(NetworkError.noData)
                     return
                 }
                 
-                do{
-                    let decodedObject = try JSONDecoder().decode(T.self, from: data)
-                    observer.onNext(decodedObject)
+                do {
+                    let decodedData = try JSONDecoder().decode(T.self, from: data)
+                    observer.onNext(decodedData)
                     observer.onCompleted()
-                }catch{
-                    observer.onError(error)
+                } catch {
+                    observer.onError(NetworkError.decodingError)
                 }
             }
             
             task.resume()
-            return Disposables.create { task.cancel() }
-
+            
+            return Disposables.create {
+                task.cancel()
+            }
         }
     }
 }

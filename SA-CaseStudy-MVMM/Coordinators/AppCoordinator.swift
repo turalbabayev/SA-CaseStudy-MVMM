@@ -12,6 +12,15 @@ class AppCoordinator: Coordinator {
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
+        
+        // Global navigation bar ayarları
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .white
+        
+        navigationController.navigationBar.tintColor = .black // Back button rengi
+        navigationController.navigationBar.standardAppearance = appearance
+        navigationController.navigationBar.scrollEdgeAppearance = appearance
     }
     
     func start() {

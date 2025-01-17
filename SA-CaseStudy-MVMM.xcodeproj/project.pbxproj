@@ -31,6 +31,7 @@
 		F6464E282D3ADB9B007702A2 /* SA-CaseStudy-MVMM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SA-CaseStudy-MVMM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6464E3E2D3ADB9E007702A2 /* SA-CaseStudy-MVMMTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SA-CaseStudy-MVMMTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6464E482D3ADB9E007702A2 /* SA-CaseStudy-MVMMUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SA-CaseStudy-MVMMUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6CD6B542D3B1E9D00E0FEFA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -96,6 +97,7 @@
 				F6464E2A2D3ADB9B007702A2 /* SA-CaseStudy-MVMM */,
 				F6464E412D3ADB9E007702A2 /* SA-CaseStudy-MVMMTests */,
 				F6464E4B2D3ADB9E007702A2 /* SA-CaseStudy-MVMMUITests */,
+				F6CD6B4F2D3B1E2F00E0FEFA /* Frameworks */,
 				F6464E292D3ADB9B007702A2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,6 +110,14 @@
 				F6464E482D3ADB9E007702A2 /* SA-CaseStudy-MVMMUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F6CD6B4F2D3B1E2F00E0FEFA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F6CD6B542D3B1E9D00E0FEFA /* XCTest.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -489,7 +499,7 @@
 				DEVELOPMENT_TEAM = FJ7F33948Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SA-CaseStudy-MVMM/App/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.turalbabayev.SA-CaseStudy-MVMMTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -509,7 +519,7 @@
 				DEVELOPMENT_TEAM = FJ7F33948Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "SA-CaseStudy-MVMM/App/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.turalbabayev.SA-CaseStudy-MVMMTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";

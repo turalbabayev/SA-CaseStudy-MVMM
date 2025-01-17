@@ -7,8 +7,14 @@
 
 import RxSwift
 
-class UserRepository {
-    func fetchUsers() -> Observable<[User]>{
-        return APIManager.shared.fetchUsers()
+class UserRepository: UserRepositoryProtocol {
+    private let apiManager: APIManager
+    
+    init(apiManager: APIManager = .shared) {
+        self.apiManager = apiManager
+    }
+    
+    func fetchUsers() -> Observable<[User]> {
+        return apiManager.fetchUsers()
     }
 }

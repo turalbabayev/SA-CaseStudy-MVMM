@@ -8,12 +8,15 @@
 import Foundation
 import RxSwift
 
-class APIManager {
+class APIManager: APIManagerProtocol {
     static let shared = APIManager()
+    private let networkService: NetworkService
     
-    private init() {}
+    init(networkService: NetworkService = .shared) {
+        self.networkService = networkService
+    }
     
-    func fetchUsers() -> Observable<[User]>{
-        return NetworkService.shared.request(urlString: Endpoints.getUsers)
+    func fetchUsers() -> Observable<[User]> {
+        return networkService.request(urlString: Endpoints.getUsers)
     }
 }
