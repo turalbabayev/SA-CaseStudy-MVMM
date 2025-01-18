@@ -7,7 +7,7 @@
 
 import RxSwift
 
-/// ViewModel that manages the user list screen's business logic and data
+/// ViewModel that manages the user list screen's business logic
 class UserListViewModel {
     /// Published stream of users
     let users = PublishSubject<[User]>()
@@ -30,18 +30,22 @@ class UserListViewModel {
     
     /// Loads users from the repository
     func loadUsers() {
-        isLoading.onNext(true)
-        
         repository.fetchUsers()
             .observe(on: MainScheduler.instance)
+            .do(
+                onSubscribe: { [weak self] in
+                    self?.isLoading.onNext(true)
+                },
+                onDispose: { [weak self] in
+                    self?.isLoading.onNext(false)
+                }
+            )
             .subscribe(
                 onNext: { [weak self] users in
                     self?.users.onNext(users)
-                    self?.isLoading.onNext(false)
                 },
                 onError: { [weak self] error in
                     self?.errorMessage.onNext("Error: \(error.localizedDescription)")
-                    self?.isLoading.onNext(false)
                 }
             )
             .disposed(by: disposeBag)

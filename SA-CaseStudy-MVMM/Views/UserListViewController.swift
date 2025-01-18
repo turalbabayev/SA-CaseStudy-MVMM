@@ -129,4 +129,8 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
         viewModel.didSelectUser(userList[indexPath.row])
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60 // İki label için yeterli yükseklik
+    }
 }

@@ -31,59 +31,60 @@ class UserListViewModelTests: XCTestCase {
         mockRepository.mockUsers = mockUsers
         
         var receivedUsers: [User]?
-        var isLoadingValues: [Bool] = []
+        var loadingStates: [Bool] = []
         
         // When
+        viewModel.isLoading
+            .skip(1)
+            .subscribe(onNext: { isLoading in
+                loadingStates.append(isLoading)
+            })
+            .disposed(by: disposeBag)
+            
         viewModel.users
             .subscribe(onNext: { users in
                 receivedUsers = users
                 expectation.fulfill()
             })
             .disposed(by: disposeBag)
-        
-        viewModel.isLoading
-            .subscribe(onNext: { isLoading in
-                isLoadingValues.append(isLoading)
-            })
-            .disposed(by: disposeBag)
-        
+            
         viewModel.loadUsers()
         
         // Then
         wait(for: [expectation], timeout: 1.0)
         XCTAssertEqual(receivedUsers, mockUsers)
-        XCTAssertEqual(isLoadingValues, [true, false])
+        XCTAssertEqual(loadingStates, [true, false])
     }
     
-    func testLoadUsersError() {
+    func testLoadUsersFailure() {
         // Given
         let expectation = XCTestExpectation(description: "Fetch users error")
-        let mockError = NetworkError.noConnection
         mockRepository.shouldFail = true
-        mockRepository.mockError = mockError
+        mockRepository.mockError = NetworkError.noConnection
         
         var receivedError: String?
-        var isLoadingValues: [Bool] = []
+        var loadingStates: [Bool] = []
         
         // When
+        viewModel.isLoading
+            .skip(1)
+            .subscribe(onNext: { isLoading in
+                loadingStates.append(isLoading)
+            })
+            .disposed(by: disposeBag)
+            
         viewModel.errorMessage
-            .subscribe(onNext: { error in
-                receivedError = error
+            .subscribe(onNext: { message in
+                receivedError = message
                 expectation.fulfill()
             })
             .disposed(by: disposeBag)
-        
-        viewModel.isLoading
-            .subscribe(onNext: { isLoading in
-                isLoadingValues.append(isLoading)
-            })
-            .disposed(by: disposeBag)
-        
+            
         viewModel.loadUsers()
         
         // Then
         wait(for: [expectation], timeout: 1.0)
-        XCTAssertTrue(receivedError?.contains("Error:") ?? false)
-        XCTAssertEqual(isLoadingValues, [true, false])
+        XCTAssertEqual(receivedError, "Error: İnternet bağlantısı yok")
+        XCTAssertEqual(loadingStates, [true, false])
     }
 } 
