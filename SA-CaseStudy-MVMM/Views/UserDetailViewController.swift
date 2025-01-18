@@ -9,21 +9,42 @@ import UIKit
 import RxSwift
 
 class UserDetailViewController: UIViewController {
+    // MARK: - UI Components
+    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet private weak var emailLabel: UILabel!
+    @IBOutlet private weak var phoneLabel: UILabel!
+    @IBOutlet private weak var websiteLabel: UILabel!
+    
+    // MARK: - Properties
     var viewModel: UserDetailViewModel!
     private let disposeBag = DisposeBag()
     
-    @IBOutlet weak var nameLabel: UILabel!
-    @IBOutlet weak var emailLabel: UILabel!
-    @IBOutlet weak var phoneLabel: UILabel!
-    @IBOutlet weak var websiteLabel: UILabel!
-    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupBindings()
+        guard viewModel != nil else {
+            fatalError("ViewModel not initialized")
+        }
+        setupView()
+    }
+}
+
+// MARK: - View Setup
+private extension UserDetailViewController {
+    func setupView() {
         setupNavigationBar()
+        setupBindings()
     }
     
-    private func setupBindings() {
+    func setupNavigationBar() {
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationController?.navigationBar.tintColor = .black
+    }
+}
+
+// MARK: - Bindings
+private extension UserDetailViewController {
+    func setupBindings() {
         viewModel.userDetails
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] viewData in
@@ -31,20 +52,14 @@ class UserDetailViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
-    
-    private func updateUI(with viewData: UserDetailViewModel.UserDetailViewData) {
+}
+
+// MARK: - UI Updates
+private extension UserDetailViewController {
+    func updateUI(with viewData: UserDetailViewModel.UserDetailViewData) {
         nameLabel.text = viewData.name
         emailLabel.text = viewData.email
         phoneLabel.text = viewData.phone
         websiteLabel.text = viewData.website
-    }
-    
-    private func setupNavigationBar() {
-        // Back button'ın görünümünü özelleştir
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem = backButton
-        
-        // Back button'ın rengini siyah yap
-        navigationController?.navigationBar.tintColor = .black
     }
 }

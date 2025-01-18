@@ -1,7 +1,9 @@
 import XCTest
 @testable import SA_CaseStudy_MVMM
 
+/// Tests for User model decoding functionality
 class UserTests: XCTestCase {
+    /// Tests successful decoding of valid JSON to User object
     func testUserDecoding() {
         // Given
         let json = """
@@ -26,6 +28,7 @@ class UserTests: XCTestCase {
         XCTAssertEqual(user?.website, "example.com")
     }
     
+    /// Tests that invalid JSON fails to decode into User object
     func testInvalidUserDecoding() {
         // Given
         let invalidJson = """

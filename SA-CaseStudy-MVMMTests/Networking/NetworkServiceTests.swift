@@ -2,10 +2,14 @@ import XCTest
 import RxSwift
 @testable import SA_CaseStudy_MVMM
 
+// MARK: - NetworkServiceTests
+/// Tests for NetworkService functionality
 class NetworkServiceTests: XCTestCase {
+    // MARK: - Properties
     var networkService: NetworkService!
     var disposeBag: DisposeBag!
     
+    // MARK: - Test Lifecycle
     override func setUp() {
         super.setUp()
         networkService = NetworkService.shared
@@ -18,6 +22,8 @@ class NetworkServiceTests: XCTestCase {
         super.tearDown()
     }
     
+    // MARK: - Tests
+    /// Tests successful API request and response handling
     func testSuccessfulRequest() {
         // Given
         let expectation = XCTestExpectation(description: "Fetch users")
@@ -46,6 +52,7 @@ class NetworkServiceTests: XCTestCase {
         XCTAssertFalse(receivedUsers?.isEmpty ?? true)
     }
     
+    /// Tests handling of invalid URL strings
     func testInvalidURLRequest() {
         // Given
         let expectation = XCTestExpectation(description: "Invalid URL")
@@ -76,6 +83,7 @@ class NetworkServiceTests: XCTestCase {
         }
     }
     
+    /// Tests handling of JSON decoding errors
     func testDecodingError() {
         // Given
         let expectation = XCTestExpectation(description: "Decoding error")

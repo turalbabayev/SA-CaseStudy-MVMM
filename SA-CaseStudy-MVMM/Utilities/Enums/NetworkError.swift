@@ -7,11 +7,18 @@
 
 import Foundation
 
+/// Represents possible network operation errors
+/// Provides localized error messages for user feedback
 enum NetworkError: LocalizedError, Equatable {
+    /// URL string couldn't be converted to URL object
     case invalidURL
+    /// Server responded with empty data
     case noData
+    /// JSON parsing failed
     case decodingError
+    /// Server returned an error status code
     case serverError(Int)
+    /// No internet connection or request failed
     case noConnection
     
     var errorDescription: String? {

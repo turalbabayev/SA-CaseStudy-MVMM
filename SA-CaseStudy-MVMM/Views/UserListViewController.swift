@@ -9,32 +9,63 @@ import UIKit
 import RxSwift
 
 class UserListViewController: UIViewController {
+    // MARK: - UI Components
     @IBOutlet weak var tableView: UITableView!
     
+    private let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.hidesWhenStopped = true
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        return indicator
+    }()
+    
+    // MARK: - Properties
     var viewModel: UserListViewModel!
     private let disposeBag = DisposeBag()
-    private var userList: [User] = [] // TableView için veri kaynağı
- 
+    private var userList: [User] = []
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if viewModel == nil {
-            print("ERROR: ViewModel is nil in viewDidLoad!") // Debug için
-            return
+        guard viewModel != nil else {
+            fatalError("ViewModel not initialized")
         }
-        
-        setupTableView()
-        setupBindings()
+        setupView()
         viewModel.loadUsers()
     }
+}
+
+// MARK: - View Setup
+private extension UserListViewController {
+    func setupView() {
+        setupActivityIndicator()
+        setupTableView()
+        setupBindings()
+    }
     
-    private func setupTableView(){
-        // TableView'in delegate ve data source'ünü ayarliyoruz.
+    func setupActivityIndicator() {
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
     }
+}
+
+// MARK: - Bindings
+private extension UserListViewController {
+    func setupBindings() {
+        bindUsers()
+        bindLoading()
+        bindError()
+    }
     
-    private func setupBindings(){
+    func bindUsers() {
         viewModel.users
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] users in
@@ -42,38 +73,60 @@ class UserListViewController: UIViewController {
                 self?.tableView.reloadData()
             })
             .disposed(by: disposeBag)
-        
+    }
+    
+    func bindLoading() {
+        viewModel.isLoading
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                self?.updateLoadingState($0)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func bindError() {
         viewModel.errorMessage
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] message in
-                ErrorHandler.showAlert(on: self!, message: message)
+                self?.showError(message)
             })
             .disposed(by: disposeBag)
     }
 }
 
-extension UserListViewController:UITableViewDelegate,UITableViewDataSource{
+// MARK: - UI Updates
+private extension UserListViewController {
+    func updateLoadingState(_ isLoading: Bool) {
+        if isLoading {
+            activityIndicator.startAnimating()
+            tableView.alpha = 0.5
+        } else {
+            activityIndicator.stopAnimating()
+            tableView.alpha = 1.0
+        }
+    }
+    
+    func showError(_ message: String) {
+        ErrorHandler.showAlert(on: self, message: message)
+    }
+}
+
+// MARK: - UITableView DataSource & Delegate
+extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return userList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Hücreyi storyboard'daki identifier ile oluştur
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as? UserTableViewCell else {
             return UITableViewCell()
         }
-        
-        // Kullanıcı bilgilerini hücreye aktar
-        let user = userList[indexPath.row]
-        cell.configure(with: user)
+        cell.configure(with: userList[indexPath.row])
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let user = userList[indexPath.row]
-        viewModel.didSelectUser(user)
+        viewModel.didSelectUser(userList[indexPath.row])
         tableView.deselectRow(at: indexPath, animated: true)
     }
-    
-    
 }

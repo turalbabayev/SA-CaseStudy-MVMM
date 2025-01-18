@@ -7,40 +7,49 @@
 
 import RxSwift
 
+/// ViewModel that manages the user list screen's business logic and data
 class UserListViewModel {
-    var coordinator: AppCoordinator?
-    private let disposeBag = DisposeBag()
-    private let repository: UserRepositoryProtocol
-    
+    /// Published stream of users
     let users = PublishSubject<[User]>()
+    /// Loading state of the view
+    let isLoading = BehaviorSubject<Bool>(value: false)
+    /// Error messages to display
     let errorMessage = PublishSubject<String>()
-    let isLoading = PublishSubject<Bool>()
     
+    private let repository: UserRepositoryProtocol
+    private let disposeBag = DisposeBag()
+    
+    /// Coordinator reference for navigation
+    var coordinator: AppCoordinator?
+    
+    /// Initializes the view model with a repository
+    /// - Parameter repository: Repository that provides user data
     init(repository: UserRepositoryProtocol = UserRepository()) {
         self.repository = repository
     }
     
+    /// Loads users from the repository
     func loadUsers() {
         isLoading.onNext(true)
+        
         repository.fetchUsers()
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onNext: { [weak self] users in
-                    self?.isLoading.onNext(false)
                     self?.users.onNext(users)
+                    self?.isLoading.onNext(false)
                 },
                 onError: { [weak self] error in
-                    self?.isLoading.onNext(false)
                     self?.errorMessage.onNext("Error: \(error.localizedDescription)")
+                    self?.isLoading.onNext(false)
                 }
             )
             .disposed(by: disposeBag)
     }
     
+    /// Handles user selection and navigates to detail screen
+    /// - Parameter user: Selected user
     func didSelectUser(_ user: User) {
-        if coordinator == nil {
-            print("ERROR: Coordinator is nil!")
-            return
-        }
         coordinator?.showUserDetail(user: user)
     }
 }
